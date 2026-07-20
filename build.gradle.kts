@@ -14,7 +14,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
-    compileOnly("com.github.retrooper:packetevents-spigot:2.7.0") // Or 2.11.2, let's use 2.7.0 or similar or build standard
+    compileOnly("com.github.retrooper:packetevents-spigot:2.11.2")
     // Let's use packetevents-spigot 2.11.2 as we checked its metadata or 2.7.0. Let's use 2.7.0 if that's standard, or 2.11.2.
     // Let's use 2.7.0 as it matches standard releases. Actually, let's use 2.11.2 since CFR decompile in previous plugin showed com.github.retrooper.packetevents.
 }
