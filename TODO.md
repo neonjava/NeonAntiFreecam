@@ -2,7 +2,7 @@
 
 ## Completed
 
-- [ ] Setup Gradle project
+- [x] Setup Gradle project
 - [ ] Implement configuration system
 - [ ] Implement Folia-native scheduler system
 - [ ] Implement packet interception engine
@@ -15,6 +15,6 @@
 
 ## In Progress
 
-- [ ] Gradle setup
+- [ ] Configuration system
 
 ## Pending
