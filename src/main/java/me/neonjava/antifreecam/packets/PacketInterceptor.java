@@ -7,6 +7,7 @@ import com.github.retrooper.packetevents.protocol.world.chunk.Column;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerChunkData;
 import me.neonjava.antifreecam.bootstrap.NeonAntiFreecamPlugin;
 import me.neonjava.antifreecam.chunk.FakeChunkEngine;
+import me.neonjava.antifreecam.chunk.PlayerStateTracker;
 import me.neonjava.antifreecam.config.WorldConfig;
 import org.bukkit.entity.Player;
 
@@ -16,26 +17,33 @@ import org.bukkit.entity.Player;
  */
 public final class PacketInterceptor extends SimplePacketListenerAbstract {
     private final FakeChunkEngine fakeChunkEngine = new FakeChunkEngine();
+    private final PlayerStateTracker stateTracker = new PlayerStateTracker();
 
     @Override
     public void onPacketPlaySend(PacketPlaySendEvent event) {
         if (event.getPlayer() == null) return;
         Player player = (Player) event.getPlayer();
 
-        // OP or Bypass check
         if (player.hasPermission("neonantifreecam.bypass")) {
             return;
         }
 
+        WorldConfig config = NeonAntiFreecamPlugin.getInstance().getConfigManager().getWorldConfig(player.getWorld().getName());
+        if (!config.isEnabled()) return;
+
+        // Check player Y coordinate transition state
+        stateTracker.checkStateChange(player, config.getHideY());
+
         if (event.getPacketType() == PacketType.Play.Server.CHUNK_DATA) {
+            // If player is below Hide Y, we serve them REAL chunks without replacement
+            if (stateTracker.getState(player) == PlayerStateTracker.State.BELOW_HIDE_LEVEL) {
+                return;
+            }
+
             WrapperPlayServerChunkData wrapper = new WrapperPlayServerChunkData(event);
             Column col = wrapper.getColumn();
             if (col == null) return;
 
-            WorldConfig config = NeonAntiFreecamPlugin.getInstance().getConfigManager().getWorldConfig(player.getWorld().getName());
-            if (!config.isEnabled()) return;
-
-            // Dynamically calculate view distance of client (or server default)
             int renderDistance = player.getClientViewDistance();
             if (renderDistance <= 0) {
                 renderDistance = player.getServer().getViewDistance();
@@ -48,5 +56,9 @@ public final class PacketInterceptor extends SimplePacketListenerAbstract {
             wrapper.setColumn(processed);
             event.markForReEncode(true);
         }
+    }
+
+    public PlayerStateTracker getStateTracker() {
+        return stateTracker;
     }
 }

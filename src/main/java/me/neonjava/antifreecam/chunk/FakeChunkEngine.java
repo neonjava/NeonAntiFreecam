@@ -5,14 +5,14 @@ import com.github.retrooper.packetevents.protocol.world.chunk.Column;
 import com.github.retrooper.packetevents.protocol.world.chunk.TileEntity;
 import com.github.retrooper.packetevents.protocol.world.chunk.impl.v_1_18.Chunk_v1_18;
 import com.github.retrooper.packetevents.protocol.world.chunk.palette.DataPalette;
-import com.github.retrooper.packetevents.protocol.world.chunk.palette.Palette;
 import com.github.retrooper.packetevents.protocol.world.chunk.palette.PaletteType;
 import com.github.retrooper.packetevents.protocol.world.chunk.palette.SingletonPalette;
 import me.neonjava.antifreecam.config.WorldConfig;
 import org.bukkit.World;
-import org.bukkit.block.data.BlockData;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -23,13 +23,12 @@ public final class FakeChunkEngine {
     private final Map<String, ProceduralNoise> noiseCache = new ConcurrentHashMap<>();
 
     // Material State IDs for 1.21
-    private static final int STONE_STATE_ID = 1;      // Fallbacks
+    private static final int STONE_STATE_ID = 1;
     private static final int DEEPSLATE_STATE_ID = 2;
     private static final int TUFF_STATE_ID = 3;
     private static final int GRANITE_STATE_ID = 4;
     private static final int ANDESITE_STATE_ID = 5;
     private static final int DIORITE_STATE_ID = 6;
-    private static final int AIR_STATE_ID = 0;
 
     public Column processColumn(World world, Column column, WorldConfig worldConfig, int playerChunkX, int playerChunkZ, int renderDistance) {
         long seed = world.getSeed();
@@ -40,11 +39,6 @@ public final class FakeChunkEngine {
 
         int minHeight = world.getMinHeight();
         int hideY = worldConfig.getHideY();
-        int bubbleRadius = worldConfig.getBubbleRadius();
-
-        // Calculate chunk ranges relative to player position
-        double distanceSq = new ChunkKey(column.getX(), column.getZ()).distanceSquared(playerChunkX, playerChunkZ);
-        double maxHideDistanceSq = Math.pow(renderDistance + 2, 2); // Buffer added
 
         for (int sectionIndex = 0; sectionIndex < originalChunks.length; sectionIndex++) {
             BaseChunk originalSection = originalChunks[sectionIndex];
@@ -78,8 +72,6 @@ public final class FakeChunkEngine {
     }
 
     private BaseChunk generateFakeSection(int chunkX, int chunkZ, int sectionIndex, int sectionMinY, BaseChunk original, ProceduralNoise noise) {
-        // Fast procedural replacement palette
-        // Generate believable noise-based blocks like Stone, Tuff, Deepslate transition, Diorite blobs
         DataPalette chunkPalette = new DataPalette(new SingletonPalette(STONE_STATE_ID), null, PaletteType.CHUNK);
 
         for (int y = 0; y < 16; y++) {

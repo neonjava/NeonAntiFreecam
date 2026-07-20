@@ -31,7 +31,13 @@ public final class NeonAntiFreecamPlugin extends JavaPlugin {
 
         // Initialize PacketEvents
         PacketEvents.getAPI().init();
-        PacketEvents.getAPI().getEventManager().registerListener(new me.neonjava.antifreecam.packets.PacketInterceptor());
+        me.neonjava.antifreecam.packets.PacketInterceptor interceptor = new me.neonjava.antifreecam.packets.PacketInterceptor();
+        PacketEvents.getAPI().getEventManager().registerListener(interceptor);
+        PacketEvents.getAPI().getEventManager().registerListener(new me.neonjava.antifreecam.entities.EntityPacketFilter());
+
+        // Register Bukkit Event Listeners
+        getServer().getPluginManager().registerEvents(new me.neonjava.antifreecam.listeners.PlayerUpdateListener(interceptor), this);
+        getServer().getPluginManager().registerEvents(new me.neonjava.antifreecam.listeners.BlockMinedListener(interceptor), this);
 
         getLogger().log(Level.INFO, "[NeonAntiFreecam] Plugin Loaded");
     }
