@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Procedural Fake Chunk Engine that computes and replaces underground terrain segments
  * while preserving surfaces, avoiding voids, and buffering neighboring chunk borders.
+ * Streams sections vertically based on a sliding vertical window around the player's camera.
  */
 public final class FakeChunkEngine {
     private final Map<String, ProceduralNoise> noiseCache = new ConcurrentHashMap<>();
@@ -30,7 +31,7 @@ public final class FakeChunkEngine {
     private static final int ANDESITE_STATE_ID = 5;
     private static final int DIORITE_STATE_ID = 6;
 
-    public Column processColumn(World world, Column column, WorldConfig worldConfig, int playerChunkX, int playerChunkZ, int renderDistance) {
+    public Column processColumn(World world, Column column, WorldConfig worldConfig, int playerChunkX, int playerChunkZ, int renderDistance, int playerY) {
         long seed = world.getSeed();
         ProceduralNoise noise = noiseCache.computeIfAbsent(world.getName(), k -> new ProceduralNoise(seed));
 
@@ -40,9 +41,14 @@ public final class FakeChunkEngine {
         int minHeight = world.getMinHeight();
         int hideY = worldConfig.getHideY();
 
+        // Calculate sliding vertical window bounds (32-block reveal radius around player camera Y)
+        int windowMinY = playerY - 32;
+        int windowMaxY = playerY + 32;
+
         for (int sectionIndex = 0; sectionIndex < originalChunks.length; sectionIndex++) {
             BaseChunk originalSection = originalChunks[sectionIndex];
             int sectionMinY = minHeight + (sectionIndex << 4);
+            int sectionMaxY = sectionMinY + 15;
 
             // If section is above Hide Y, preserve real world surface completely
             if (sectionMinY >= hideY) {
@@ -50,7 +56,13 @@ public final class FakeChunkEngine {
                 continue;
             }
 
-            // Create fake block section data
+            // Stream independently: if chunk section intersects or is inside the sliding vertical window, keep it REAL
+            if (sectionMaxY >= windowMinY && sectionMinY <= windowMaxY) {
+                modifiedChunks[sectionIndex] = originalSection;
+                continue;
+            }
+
+            // Outside sliding vertical window: replace with fake blocks
             modifiedChunks[sectionIndex] = generateFakeSection(column.getX(), column.getZ(), sectionIndex, sectionMinY, originalSection, noise);
         }
 
@@ -60,7 +72,12 @@ public final class FakeChunkEngine {
         if (originalTileEntities != null) {
             for (TileEntity te : originalTileEntities) {
                 if (te.getY() < hideY && worldConfig.isHideContainers()) {
-                    // Hide container blocks naturally
+                    // Check if block entity is inside the sliding vertical window
+                    if (te.getY() >= windowMinY && te.getY() <= windowMaxY) {
+                        filteredTileEntities.add(te);
+                        continue;
+                    }
+                    // Hide container blocks outside window naturally
                     continue;
                 }
                 filteredTileEntities.add(te);

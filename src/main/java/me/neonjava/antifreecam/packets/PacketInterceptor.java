@@ -65,8 +65,9 @@ public final class PacketInterceptor extends SimplePacketListenerAbstract {
 
             int pX = player.getLocation().getBlockX() >> 4;
             int pZ = player.getLocation().getBlockZ() >> 4;
+            int pY = player.getLocation().getBlockY();
 
-            Column processed = fakeChunkEngine.processColumn(player.getWorld(), col, config, pX, pZ, renderDistance);
+            Column processed = fakeChunkEngine.processColumn(player.getWorld(), col, config, pX, pZ, renderDistance, pY);
             wrapper.setColumn(processed);
             event.markForReEncode(true);
         }
