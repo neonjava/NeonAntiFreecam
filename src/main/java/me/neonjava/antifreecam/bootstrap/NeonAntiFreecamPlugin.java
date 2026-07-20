@@ -31,6 +31,7 @@ public final class NeonAntiFreecamPlugin extends JavaPlugin {
 
         // Initialize PacketEvents
         PacketEvents.getAPI().init();
+        PacketEvents.getAPI().getEventManager().registerListener(new me.neonjava.antifreecam.packets.PacketInterceptor());
 
         getLogger().log(Level.INFO, "[NeonAntiFreecam] Plugin Loaded");
     }
