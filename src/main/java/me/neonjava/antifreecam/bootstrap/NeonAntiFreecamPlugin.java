@@ -29,6 +29,9 @@ public final class NeonAntiFreecamPlugin extends JavaPlugin {
         configManager = new ConfigManager(this);
         configManager.load();
 
+        // Initialize Performance Metrics
+        me.neonjava.antifreecam.metrics.PerformanceMetrics metrics = new me.neonjava.antifreecam.metrics.PerformanceMetrics();
+
         // Initialize PacketEvents
         PacketEvents.getAPI().init();
         me.neonjava.antifreecam.packets.PacketInterceptor interceptor = new me.neonjava.antifreecam.packets.PacketInterceptor();
@@ -39,11 +42,26 @@ public final class NeonAntiFreecamPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new me.neonjava.antifreecam.listeners.PlayerUpdateListener(interceptor), this);
         getServer().getPluginManager().registerEvents(new me.neonjava.antifreecam.listeners.BlockMinedListener(interceptor), this);
 
+        // Register commands
+        var cmd = getCommand("neonantifreecam");
+        if (cmd != null) {
+            cmd.setExecutor(new me.neonjava.antifreecam.commands.AntiFreecamCommand(this, metrics));
+        }
+
+        // Start Web REST API
+        me.neonjava.antifreecam.web.WebDashboardApi webApi = new me.neonjava.antifreecam.web.WebDashboardApi(this, metrics);
+        webApi.start(8080); // Configure port natively
+
         getLogger().log(Level.INFO, "[NeonAntiFreecam] Plugin Loaded");
     }
 
+    private me.neonjava.antifreecam.web.WebDashboardApi webApi;
+
     @Override
     public void onDisable() {
+        if (webApi != null) {
+            webApi.stop();
+        }
         PacketEvents.getAPI().terminate();
         getLogger().log(Level.INFO, "[NeonAntiFreecam] Plugin Disabled");
     }

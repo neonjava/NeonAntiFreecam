@@ -8,3 +8,9 @@ load: STARTUP
 dependencies:
   - name: PacketEvents
     required: true
+
+commands:
+  neonantifreecam:
+    description: AntiFreecam management commands
+    aliases: [antifreecam]
+    permission: neonantifreecam.admin
