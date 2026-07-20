@@ -3,7 +3,7 @@
 ## Completed
 
 - [x] Setup Gradle project
-- [ ] Implement configuration system
+- [x] Implement configuration system
 - [ ] Implement Folia-native scheduler system
 - [ ] Implement packet interception engine
 - [ ] Implement fake chunk engine and player bubble
@@ -15,6 +15,6 @@
 
 ## In Progress
 
-- [ ] Configuration system
+- [ ] Folia-native scheduler system
 
 ## Pending
