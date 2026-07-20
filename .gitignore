@@ -1,0 +1,13 @@
+# .gitignore
+.gradle/
+build/
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+.project
+.classpath
+.settings/
+.DS_Store
+*.log
