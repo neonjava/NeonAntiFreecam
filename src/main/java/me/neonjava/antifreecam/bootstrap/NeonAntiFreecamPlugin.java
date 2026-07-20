@@ -17,8 +17,6 @@ public final class NeonAntiFreecamPlugin extends JavaPlugin {
     @Override
     public void onLoad() {
         instance = this;
-        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
-        PacketEvents.getAPI().load();
     }
 
     @Override
@@ -32,8 +30,6 @@ public final class NeonAntiFreecamPlugin extends JavaPlugin {
         // Initialize Performance Metrics
         me.neonjava.antifreecam.metrics.PerformanceMetrics metrics = new me.neonjava.antifreecam.metrics.PerformanceMetrics();
 
-        // Initialize PacketEvents
-        PacketEvents.getAPI().init();
         me.neonjava.antifreecam.packets.PacketInterceptor interceptor = new me.neonjava.antifreecam.packets.PacketInterceptor();
         PacketEvents.getAPI().getEventManager().registerListener(interceptor);
         PacketEvents.getAPI().getEventManager().registerListener(new me.neonjava.antifreecam.entities.EntityPacketFilter());
@@ -62,7 +58,6 @@ public final class NeonAntiFreecamPlugin extends JavaPlugin {
         if (webApi != null) {
             webApi.stop();
         }
-        PacketEvents.getAPI().terminate();
         getLogger().log(Level.INFO, "[NeonAntiFreecam] Plugin Disabled");
     }
 

@@ -1,13 +1,11 @@
 name: NeonAntiFreecam
-version: '1.0.0'
+version: 1.0.0
+author: NeonJava
 main: me.neonjava.antifreecam.bootstrap.NeonAntiFreecamPlugin
 api-version: '1.21'
-author: NeonJava
+depend:
+  - packetevents
 folia-supported: true
-load: STARTUP
-dependencies:
-  - name: PacketEvents
-    required: true
 
 commands:
   neonantifreecam:
