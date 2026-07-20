@@ -1,0 +1,23 @@
+enabled: true
+hide-y: 32
+bubble-radius: 20
+smart-fill: true
+hide-entities: true
+hide-structures: true
+hide-containers: true
+bedrock-support: true
+notify-admins: true
+debug: false
+
+hidden-structures:
+  - "mineshaft"
+  - "stronghold"
+  - "ancient_city"
+  - "trial_chambers"
+
+worlds:
+  world_nether:
+    hide-y: 128
+    bubble-radius: 15
+  world_the_end:
+    enabled: false
