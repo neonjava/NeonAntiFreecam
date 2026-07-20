@@ -33,12 +33,14 @@ public final class PlayerUpdateListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         interceptor.getStateTracker().remove(event.getPlayer());
+        interceptor.getPredictiveEngine().clear(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
         interceptor.getStateTracker().remove(player);
+        interceptor.getPredictiveEngine().clear(player);
         interceptor.getStateTracker().resendNearbyChunks(player);
     }
 
@@ -46,6 +48,7 @@ public final class PlayerUpdateListener implements Listener {
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
         interceptor.getStateTracker().remove(player);
+        interceptor.getPredictiveEngine().clear(player);
         interceptor.getStateTracker().resendNearbyChunks(player);
     }
 }
