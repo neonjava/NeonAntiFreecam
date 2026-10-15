@@ -17,4 +17,4 @@ Install PacketEvents and the built plugin JAR on a compatible server. This fork 
 
 ## Origin
 
-This repository is a fork of FPAntiFreeCam by Fleoxzyy. The original MIT license and attribution remain in [LICENSE](LICENSE).
+This repository is a fork of FPAntiFreeCam by Fleoxzyy. The original MIT license and attribution remain in [LICENSE.upstream](LICENSE.upstream).
